@@ -67,11 +67,11 @@ fun UpdateDialog(task: Task, onUpdate: (task: Task)->Unit, onDismiss: ()->Unit) 
                     Button(
                         onClick = {
                             if (title.value.isNotBlank()) {
-                                onCreate(
+                                onUpdate(
                                     Task(
                                         id = null,
                                         title = title.value,
-                                        completed = completed.value == "true",
+                                        completed = true,
                                         priority = priority.value
                                     )
                                 )

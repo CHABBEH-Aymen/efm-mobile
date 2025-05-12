@@ -20,9 +20,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.example.efm.data.Task
 import com.example.efm.models.TaskViewModel
 import com.example.efm.ui.CreateDialog
 import com.example.efm.ui.TaskItem
+import com.example.efm.ui.UpdateDialog
 import com.example.efm.ui.theme.EfmTheme
 
 class MainActivity : ComponentActivity() {
@@ -32,8 +34,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             EfmTheme {
-                var onEdit by remember { mutableStateOf(false) }
+                var onUpdate by remember { mutableStateOf(false) }
                 var onCreate by remember { mutableStateOf(false) }
+                var selectedTask = remember { mutableStateOf(Task(1,"", false, "" )) }
                 val tasks by viewModel.tasks.collectAsState()
 
                 Scaffold(modifier = Modifier.fillMaxSize(), floatingActionButton = {
@@ -50,6 +53,17 @@ class MainActivity : ComponentActivity() {
 
                     }, onDismiss = {onCreate = false})
 
+                    if(onUpdate)
+                        UpdateDialog(
+                            task = selectedTask.value,
+                            onUpdate = { task ->
+                            task.id = tasks.size + 1
+                            viewModel.createTask(task)
+
+
+                        }, onDismiss = { onUpdate = false }
+                        )
+
                     LazyColumn (Modifier.padding(innerPadding))
                     {
                         items(tasks){ task ->
@@ -58,7 +72,8 @@ class MainActivity : ComponentActivity() {
                                 viewModel.destroyTask(task.id!!)
                             },
                                 onUpdate = {
-                                    onEdit = true;
+                                    onUpdate = true;
+                                    selectedTask.value = task
                                 })
                         }
                     }
